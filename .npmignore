@@ -1,0 +1,32 @@
+# Source files (已编译到 dist/)
+src/
+
+# Examples and documentation
+examples/
+
+# Configuration files
+tsconfig.json
+.gitignore
+
+# Development files
+*.log
+*.tsbuildinfo
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test files
+__tests__/
+*.test.ts
+*.spec.ts
+
+# CI/CD
+.github/
+
+# Other
+.DS_Store
+Thumbs.db
+

@@ -1,0 +1,19 @@
+{
+  "name": "interaction-system-demo",
+  "version": "1.0.0",
+  "description": "Interaction System Demo Project",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "interaction-system": "file:../.."
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
+  }
+}
+

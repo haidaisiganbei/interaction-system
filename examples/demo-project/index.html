@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaction System Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .canvas-container {
+            position: relative;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+        
+        .info-panel {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .info-value {
+            font-family: 'Courier New', monospace;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .log-container {
+            background: #1e1e1e;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #d4d4d4;
+        }
+        
+        .log-entry {
+            padding: 5px 0;
+            border-left: 3px solid #667eea;
+            padding-left: 10px;
+            margin: 5px 0;
+        }
+        
+        .log-time {
+            color: #858585;
+            font-size: 11px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button.primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        button.primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        button.secondary {
+            background: #e9ecef;
+            color: #495057;
+        }
+        
+        button.secondary:hover {
+            background: #dee2e6;
+        }
+        
+        .instructions {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .instructions ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .instructions li {
+            margin: 5px 0;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Interaction System Demo</h1>
+        <p class="subtitle">体验触摸、鼠标和键盘交互</p>
+        
+        <div class="instructions">
+            <strong>💡 使用说明：</strong>
+            <ul>
+                <li>在黑色画布上点击、拖动鼠标</li>
+                <li>使用鼠标滚轮进行滚动</li>
+                <li>按住 <kbd>Ctrl</kbd> 键进行多点触控模拟</li>
+                <li>按键盘任意键测试键盘输入</li>
+            </ul>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="interactionCanvas" width="360" height="640"></canvas>
+        </div>
+        
+        <div class="info-panel">
+            <div class="info-item">
+                <span class="info-label">总消息数</span>
+                <span class="info-value" id="totalMessages">0</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">触摸消息</span>
+                <span class="info-value" id="touchMessages">0</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">键盘消息</span>
+                <span class="info-value" id="keyMessages">0</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">最后坐标</span>
+                <span class="info-value" id="lastPosition">-</span>
+            </div>
+        </div>
+        
+        <div class="log-container" id="logContainer">
+            <div class="log-entry">
+                <div class="log-time">[等待交互事件...]</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="secondary" id="clearLog">清空日志</button>
+            <button class="primary" id="simulateTouch">模拟触摸</button>
+        </div>
+    </div>
+    
+    <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
+
